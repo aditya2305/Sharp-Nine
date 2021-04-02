@@ -12,6 +12,7 @@ import Loader from "../components/Loader";
 import Paginate from "../components/Paginate";
 import Message from "../components/Message";
 import ProductCarousel from "../components/ProductCarousel";
+import ProductJumbotron from "../components/ProductJumbotron";
 
 const HomeScreen = ({ match }) => {
   const keyword = match.params.keyword;
@@ -31,7 +32,11 @@ const HomeScreen = ({ match }) => {
     <>
       <Meta />
       {!keyword ? (
-        <ProductCarousel />
+        <>
+          <ProductCarousel />
+
+          <ProductJumbotron />
+        </>
       ) : (
         <Link to="/" className="btn btn-light">
           Go Back

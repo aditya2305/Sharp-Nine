@@ -1,14 +1,14 @@
 import React from "react";
-import { Container, Row, Col } from "react-bootstrap";
+import { Container, Navbar } from "react-bootstrap";
 
 const Footer = () => {
   return (
     <footer>
-      <Container>
-        <Row>
-          <Col className="text-center py-3">CopyRight &copy; GSELL</Col>
-        </Row>
-      </Container>
+      <Navbar bg="dark" variant="dark" expand="lg" collapseOnSelect>
+        <Container className="text-center py-3 text-light">
+          CopyRight &copy; Sharp Nine
+        </Container>
+      </Navbar>
     </footer>
   );
 };

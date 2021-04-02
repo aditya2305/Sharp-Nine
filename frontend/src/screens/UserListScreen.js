@@ -8,6 +8,9 @@ import Message from "../components/Message";
 import Loader from "../components/Loader";
 import { listUsers, deleteUser } from "../actions/userActions";
 
+import { listOrders } from "../actions/orderActions";
+import LendingDetailsComponent from "../components/LendingDetailsComponent";
+
 const UserListScreen = ({ history }) => {
   const dispatch = useDispatch();
 
@@ -20,9 +23,13 @@ const UserListScreen = ({ history }) => {
   const userDelete = useSelector((state) => state.userDelete);
   const { success: successDelete } = userDelete;
 
+  var orderList = useSelector((state) => state.orderList);
+  var { loading: orderLoading, error: orderError, orders } = orderList;
+
   useEffect(() => {
     if (userInfo && userInfo.isAdmin) {
       dispatch(listUsers());
+      dispatch(listOrders());
     } else {
       history.push("/login");
     }
@@ -49,7 +56,8 @@ const UserListScreen = ({ history }) => {
               <th>NAME</th>
               <th>EMAIL</th>
               <th>ADMIN</th>
-              <th></th>
+              <th>LENDING INFORMATION</th>
+              <th>EDIT</th>
             </tr>
           </thead>
           <tbody>
@@ -66,6 +74,9 @@ const UserListScreen = ({ history }) => {
                   ) : (
                     <i className="fas fa-times" style={{ color: "red" }}></i>
                   )}
+                </td>
+                <td>
+                  <LendingDetailsComponent id={user._id} />
                 </td>
                 <td>
                   <LinkContainer to={`/admin/user/${user._id}/edit`}>
