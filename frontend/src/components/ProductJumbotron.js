@@ -7,8 +7,8 @@ const ProductJumbotron = () => {
       <Container className="text-center">
         <h1>Welcome to SharpNine</h1>
         <p>
-          This is an effort to help people benefit from each other by lending
-          their equipments online
+          This is an effort to help people benefit from each other by selling
+          their used equipments online
         </p>
       </Container>
     </Jumbotron>

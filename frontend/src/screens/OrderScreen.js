@@ -13,15 +13,12 @@ import {
 } from "../actions/orderActions";
 import Loader from "../components/Loader";
 
-import { PayPalButton } from "react-paypal-button-v2";
 import {
   ORDER_PAY_RESET,
   ORDER_DELIVER_RESET,
 } from "../actions/actionConstants";
 
 const OrderScreen = ({ match, history }) => {
-  const [sdkReady, setSdkReady] = useState(false);
-
   const orderId = match.params.id;
 
   const dispatch = useDispatch();
@@ -54,28 +51,10 @@ const OrderScreen = ({ match, history }) => {
       history.push("/login");
     }
 
-    const addPayPalScript = async () => {
-      const { data: clientId } = await axios.get("/api/config/paypal");
-      const script = document.createElement("script");
-      script.type = "text/javascript";
-      script.src = `https://www.paypal.com/sdk/js?client-id=${clientId}`;
-      script.async = true;
-      script.onload = () => {
-        setSdkReady(true);
-      };
-      document.body.appendChild(script);
-    };
-
     if (!order || successPay || successDeliver) {
       dispatch({ type: ORDER_PAY_RESET });
       dispatch({ type: ORDER_DELIVER_RESET });
       dispatch(getOrderDetails(orderId));
-    } else if (!order.isPaid) {
-      if (!window.paypal) {
-        addPayPalScript();
-      } else {
-        setSdkReady(true);
-      }
     }
   }, [dispatch, orderId, successPay, order, successDeliver]);
 
@@ -85,6 +64,86 @@ const OrderScreen = ({ match, history }) => {
 
   const deliverHandler = () => {
     dispatch(deliverOrder(order));
+  };
+
+  // const paymentVerificationHandler = async (data) => {
+  //   await axios
+  //     .post("http://localhost:5000/api/payment/paymentverification ", {
+  //       data,
+  //     })
+  //     .then((res) => {
+  //       console.log("res server - ", res);
+  //       if (res.data?.success) {
+  //         console.log("VERIFIED");
+  //         successPaymentHandler({
+  //           id: orderStatus.id,
+  //           status: "completed",
+  //           update_time: Date.now(),
+  //           email_address: userInfo.email,
+  //         });
+  //         alert("Payment Completed");
+  //       }
+  //     })
+  //     .catch((err) => {
+  //       console.log("Payment Failed", err);
+  //     });
+  // };
+
+  const checkOutHandler = async () => {
+    const {
+      data: { orderStatus },
+    } = await axios.post("/api/payment/checkout", {
+      amount: roundToNearest100(order.totalPrice),
+    });
+
+    const {
+      data: { key },
+    } = await axios.get("/api/config/razorpay");
+
+    const options = {
+      key,
+      amount: orderStatus.amount,
+      currency: "INR",
+      name: "Test",
+      description: "Test Transaction",
+      image: "",
+      order_id: orderStatus.id,
+      handler: function (response) {
+        if (
+          response.razorpay_order_id &&
+          response.razorpay_payment_id &&
+          response.razorpay_signature
+        ) {
+          successPaymentHandler({
+            id: orderStatus.id,
+            status: "completed",
+            update_time: Date.now(),
+            email_address: userInfo.email,
+          });
+        }
+      },
+      prefill: {
+        name: userInfo.name,
+        email: userInfo.email,
+        contact: "9000090000",
+      },
+      notes: {
+        address: "Test Address",
+      },
+      theme: {
+        color: "#121212",
+      },
+    };
+    const razor = new window.Razorpay(options);
+    razor.open();
+  };
+
+  const roundToNearest100 = (number) => {
+    if (Number.isInteger(number)) {
+      return number;
+    } else {
+      return Math.floor(number / 100) * 100;
+    }
   };
 
   return (
@@ -191,35 +250,30 @@ const OrderScreen = ({ match, history }) => {
                       <Col>₹{order.itemsPrice}</Col>
                     </Row>
                   </ListGroup.Item>
-                  <ListGroup.Item>
-                    <Row>
-                      <Col>Shipping</Col>
-                      <Col>₹{order.shippingPrice}</Col>
-                    </Row>
-                  </ListGroup.Item>
-                  <ListGroup.Item>
-                    <Row>
-                      <Col>Tax</Col>
-                      <Col>₹{order.taxPrice}</Col>
-                    </Row>
-                  </ListGroup.Item>
+
                   <ListGroup.Item>
                     <Row>
                       <Col>Total</Col>
-                      <Col>₹{order.totalPrice}</Col>
+                      <Col>₹{roundToNearest100(order.totalPrice)}</Col>
                     </Row>
                   </ListGroup.Item>
                   {!order.isPaid && (
                     <ListGroup.Item>
                       {loadingPay && <Loader />}
-                      {!sdkReady ? (
+                      {/* {!sdkReady ? (
                         <Loader />
                       ) : (
                         <PayPalButton
                           amount={order.totalPrice}
                           onSuccess={successPaymentHandler}
                         />
-                      )}
+                      )} */}
+                      <Button
+                        onClick={() => checkOutHandler()}
+                        variant="primary"
+                      >
+                        Pay Now
+                      </Button>
                     </ListGroup.Item>
                   )}
                   <ListGroup.Item>

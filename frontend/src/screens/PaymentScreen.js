@@ -18,7 +18,7 @@ const PaymentScreen = ({ history }) => {
 
   const dispatch = useDispatch();
 
-  const [paymentMethod, setPaymentMethod] = useState("Paypal");
+  const [paymentMethod, setPaymentMethod] = useState("Razorpay");
 
   const submitHandler = (e) => {
     e.preventDefault();
@@ -37,19 +37,10 @@ const PaymentScreen = ({ history }) => {
           <Col>
             <Form.Check
               type="radio"
-              label="Paypal or Credit Card"
-              id="Paypal"
+              label="Razorpay"
+              id="Razorpay"
               name="paymentMethod"
-              value="Paypal"
-              checked
-              onChange={(e) => e.target.value}
-            ></Form.Check>
-            <Form.Check
-              type="radio"
-              label="Stripe"
-              id="Stripe"
-              name="paymentMethod"
-              value="Stripe"
+              value="Razorpay"
               checked
               onChange={(e) => e.target.value}
             ></Form.Check>
