@@ -9,7 +9,7 @@
     "server": "node backend/server.js",
     "client": "npm start --prefix frontend",
     "dev": "concurrently  \"npm run server\" \"npm run client\"",
-    "postbuild": "npm install && npm install --prefix frontend && node backend/server.js"
+    "postbuild": "npm install && npm install --prefix frontend"
   },
   "repository": {
     "type": "git",
