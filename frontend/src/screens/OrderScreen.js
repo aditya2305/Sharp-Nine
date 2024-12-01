@@ -66,28 +66,6 @@ const OrderScreen = ({ match, history }) => {
     dispatch(deliverOrder(order));
   };
 
-  // const paymentVerificationHandler = async (data) => {
-  //   await axios
-  //     .post("http://localhost:5000/api/payment/paymentverification ", {
-  //       data,
-  //     })
-  //     .then((res) => {
-  //       console.log("res server - ", res);
-  //       if (res.data?.success) {
-  //         console.log("VERIFIED");
-  //         successPaymentHandler({
-  //           id: orderStatus.id,
-  //           status: "completed",
-  //           update_time: Date.now(),
-  //           email_address: userInfo.email,
-  //         });
-  //         alert("Payment Completed");
-  //       }
-  //     })
-  //     .catch((err) => {
-  //       console.log("Payment Failed", err);
-  //     });
-  // };
 
   const checkOutHandler = async () => {
     const {
